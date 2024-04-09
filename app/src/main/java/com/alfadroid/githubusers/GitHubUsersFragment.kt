@@ -26,9 +26,15 @@ class GitHubUsersFragment : Fragment() {
     ): View {
         binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
-        val baseURL = "https://api.github.com/"
+        getListGinHubUsers()
+        getSpecificUserByAlias(alias = "defunkt")
+
+        return binging.root
+    }
+
+    private fun getListGinHubUsers() {
         val retrofit = Retrofit.Builder()
-            .baseUrl(baseURL)
+            .baseUrl(URL_GITHUB)
             .client(OkHttpClient())
             .build()
 
@@ -39,14 +45,41 @@ class GitHubUsersFragment : Fragment() {
                 call: retrofit2.Call<ResponseBody>,
                 response: retrofit2.Response<ResponseBody>
             ) {
-                println("Запрос выполнился УСПЕШНО ${response.body()?.string()}")
+                println("USERS LIST ${response.body()?.string()}")
             }
 
             override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {
-                println("Запрос не выполнился")
+                println("Запрос requestUsers не выполнился")
             }
         })
-
-        return binging.root
     }
+
+    private fun getSpecificUserByAlias(alias: String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(URL_GITHUB)
+            .client(OkHttpClient())
+            .build()
+
+        val retrofitService = retrofit.create(GitHubInterface::class.java)
+        retrofitService.requestUserByAlias(alias)
+            .enqueue(object : retrofit2.Callback<ResponseBody> {
+
+                override fun onResponse(
+                    call: retrofit2.Call<ResponseBody>,
+                    response: retrofit2.Response<ResponseBody>
+                ) {
+                    println("CURRENT USER ${response.body()?.string()}")
+                }
+
+                override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {
+                    println("Запрос requestUserByAlias не выполнился")
+                }
+            })
+
+    }
+
+    companion object {
+        const val URL_GITHUB = "https://api.github.com/"
+    }
+
 }
