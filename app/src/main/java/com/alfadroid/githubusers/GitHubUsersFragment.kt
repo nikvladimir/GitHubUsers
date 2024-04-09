@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
-import okhttp3.Call
-import okhttp3.Callback
+import com.alfadroid.githubusers.retrofit.GitHubInterface
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.io.IOException
+import okhttp3.ResponseBody
+import retrofit2.Retrofit
 
 
 class GitHubUsersFragment : Fragment() {
@@ -28,21 +26,26 @@ class GitHubUsersFragment : Fragment() {
     ): View {
         binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
-        val URL = "https://api.github.com/users"
-        val okHttpClient = OkHttpClient()
-        val request = Request.Builder().url(URL).build()
-        val callback = object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
+        val baseURL = "https://api.github.com/"
+        val retrofit = Retrofit.Builder()
+            .baseUrl(baseURL)
+            .client(OkHttpClient())
+            .build()
+
+        val retrofitService = retrofit.create(GitHubInterface::class.java)
+        retrofitService.requestUsers().enqueue(object : retrofit2.Callback<ResponseBody> {
+
+            override fun onResponse(
+                call: retrofit2.Call<ResponseBody>,
+                response: retrofit2.Response<ResponseBody>
+            ) {
+                println("Запрос выполнился УСПЕШНО ${response.body()?.string()}")
+            }
+
+            override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {
                 println("Запрос не выполнился")
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                println("Запрос выполнился УСПЕШНО ${response.body?.string()}")
-            }
-
-        }
-
-        okHttpClient.newCall(request).enqueue(callback)
+        })
 
         return binging.root
     }
