@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
-import com.alfadroid.githubusers.retrofit.GitHubInterface
-import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
-import retrofit2.Retrofit
+import com.alfadroid.githubusers.retrofit.RetrofitInstance
+import com.alfadroid.githubusers.retrofit.UserByAliasDto
+import com.alfadroid.githubusers.retrofit.UserInListDto
 
 
 class GitHubUsersFragment : Fragment() {
@@ -33,53 +32,43 @@ class GitHubUsersFragment : Fragment() {
     }
 
     private fun getListGinHubUsers() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(URL_GITHUB)
-            .client(OkHttpClient())
-            .build()
+        RetrofitInstance
+            .retrofitService
+            .requestUsers()
+            .enqueue(object : retrofit2.Callback<List<UserInListDto>> {
 
-        val retrofitService = retrofit.create(GitHubInterface::class.java)
-        retrofitService.requestUsers().enqueue(object : retrofit2.Callback<ResponseBody> {
+                override fun onResponse(
+                    call: retrofit2.Call<List<UserInListDto>>,
+                    response: retrofit2.Response<List<UserInListDto>>
+                ) {
+                    val usersListResponse = response.body()
+                    println("USERS LIST $usersListResponse")
+                }
 
-            override fun onResponse(
-                call: retrofit2.Call<ResponseBody>,
-                response: retrofit2.Response<ResponseBody>
-            ) {
-                println("USERS LIST ${response.body()?.string()}")
-            }
-
-            override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {
-                println("Запрос requestUsers не выполнился")
-            }
-        })
+                override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
+                    println(">>>>>>>>    Запрос requestUsers не выполнился")
+                    t.printStackTrace()
+                }
+            })
     }
 
     private fun getSpecificUserByAlias(alias: String) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(URL_GITHUB)
-            .client(OkHttpClient())
-            .build()
-
-        val retrofitService = retrofit.create(GitHubInterface::class.java)
-        retrofitService.requestUserByAlias(alias)
-            .enqueue(object : retrofit2.Callback<ResponseBody> {
+        RetrofitInstance
+            .retrofitService.requestUserByAlias(alias)
+            .enqueue(object : retrofit2.Callback<UserByAliasDto> {
 
                 override fun onResponse(
-                    call: retrofit2.Call<ResponseBody>,
-                    response: retrofit2.Response<ResponseBody>
+                    call: retrofit2.Call<UserByAliasDto>,
+                    response: retrofit2.Response<UserByAliasDto>
                 ) {
-                    println("CURRENT USER ${response.body()?.string()}")
+                    val userDaraResponse = response.body()
+                    println("CURRENT USER $userDaraResponse")
                 }
 
-                override fun onFailure(call: retrofit2.Call<ResponseBody>, t: Throwable) {
-                    println("Запрос requestUserByAlias не выполнился")
+                override fun onFailure(call: retrofit2.Call<UserByAliasDto>, t: Throwable) {
+                    println(">>>>>>>>    Запрос requestUserByAlias не выполнился")
                 }
             })
 
     }
-
-    companion object {
-        const val URL_GITHUB = "https://api.github.com/"
-    }
-
 }
