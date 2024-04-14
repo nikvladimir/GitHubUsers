@@ -9,6 +9,7 @@ import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
 import com.alfadroid.githubusers.retrofit.RetrofitInstance
 import com.alfadroid.githubusers.retrofit.UserByAliasDto
 import com.alfadroid.githubusers.retrofit.UserInListDto
+import com.google.gson.Gson
 
 
 class GitHubUsersFragment : Fragment() {
@@ -26,7 +27,7 @@ class GitHubUsersFragment : Fragment() {
         binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
         getListGinHubUsers()
-        getSpecificUserByAlias(alias = "defunkt")
+        getSpecificUserByAlias()
 
         return binging.root
     }
@@ -42,7 +43,8 @@ class GitHubUsersFragment : Fragment() {
                     response: retrofit2.Response<List<UserInListDto>>
                 ) {
                     val usersListResponse = response.body()
-                    println("USERS LIST $usersListResponse")
+                    val usersListGson = Gson().toJson(usersListResponse)
+                    println("USERS DATA Gson: $usersListGson")
                 }
 
                 override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
@@ -52,7 +54,7 @@ class GitHubUsersFragment : Fragment() {
             })
     }
 
-    private fun getSpecificUserByAlias(alias: String) {
+    private fun getSpecificUserByAlias(alias: String = "defunkt") {
         RetrofitInstance
             .retrofitService.requestUserByAlias(alias)
             .enqueue(object : retrofit2.Callback<UserByAliasDto> {
@@ -61,8 +63,9 @@ class GitHubUsersFragment : Fragment() {
                     call: retrofit2.Call<UserByAliasDto>,
                     response: retrofit2.Response<UserByAliasDto>
                 ) {
-                    val userDaraResponse = response.body()
-                    println("CURRENT USER $userDaraResponse")
+                    val userDataResponse = response.body()
+                    val userDataGson = Gson().toJson(userDataResponse)
+                    println("CURRENT USER Gson: $userDataGson")
                 }
 
                 override fun onFailure(call: retrofit2.Call<UserByAliasDto>, t: Throwable) {
