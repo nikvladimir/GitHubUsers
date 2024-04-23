@@ -27,9 +27,11 @@ class GitHubUsersFragment : Fragment() {
     ): View {
         binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
-        getListGinHubUsers()
-        getSpecificUserByAlias()
-        setupRecyclerView()
+        val usersList = arrayOf("January", "February", "March")
+//            getListGinHubUsers()
+        setupRecyclerView(usersList)
+
+//        getSpecificUserByAlias()
 
         return binging.root
     }
@@ -73,13 +75,10 @@ class GitHubUsersFragment : Fragment() {
             })
     }
 
-    private fun setupRecyclerView() {
-        val dataset = arrayOf("January", "February", "March")
-        val usersAdapter = UsersAdapter(dataset)
-
+    private fun setupRecyclerView(usersList: Array<String>) {
         binging.recyclerViewUsersFragment.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = usersAdapter
+            adapter = UsersAdapter(usersList)
         }
     }
 

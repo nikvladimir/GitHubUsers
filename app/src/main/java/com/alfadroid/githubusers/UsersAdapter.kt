@@ -18,6 +18,7 @@ class UsersAdapter(
 
         fun bind(userLogin: String, position: Int) = with(binding) {
             tvUserId.text = userLogin
+            tvUserLogin.text = userLogin
         }
     }
 
