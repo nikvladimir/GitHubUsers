@@ -16,6 +16,7 @@ import com.google.gson.Gson
 class GitHubUsersFragment : Fragment() {
 
     private lateinit var binging: FragmentGitHubUsersBinding
+    private lateinit var usersAdapter: UsersAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +28,10 @@ class GitHubUsersFragment : Fragment() {
     ): View {
         binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
+        println("onCreateView")
         val usersList = getListGinHubUsers()
         if (usersList != null) {
+            println("usersList != null")
             setupRecyclerView(usersList)
         }
 
@@ -36,6 +39,7 @@ class GitHubUsersFragment : Fragment() {
     }
 
     private fun getListGinHubUsers(): List<UserInListDto>? {
+        println("getListGinHubUsers")
         var usersListGson: List<UserInListDto>? = null
 
         RetrofitInstance
@@ -48,6 +52,8 @@ class GitHubUsersFragment : Fragment() {
                     response: retrofit2.Response<List<UserInListDto>>
                 ) {
                     usersListGson = response.body()
+                    usersListGson?.let { usersAdapter.submitList(it) }
+                    println("onResponse: $usersListGson")
                 }
 
                 override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
@@ -55,6 +61,7 @@ class GitHubUsersFragment : Fragment() {
                 }
             })
 
+        println("usersListGson: $usersListGson")
         return usersListGson
     }
 
@@ -77,9 +84,11 @@ class GitHubUsersFragment : Fragment() {
     }
 
     private fun setupRecyclerView(usersList: List<UserInListDto>) {
+        println("setupRecyclerView")
+        usersAdapter = UsersAdapter(usersList)
         binging.recyclerViewUsersFragment.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = UsersAdapter(usersList)
+            adapter = usersAdapter
         }
     }
 

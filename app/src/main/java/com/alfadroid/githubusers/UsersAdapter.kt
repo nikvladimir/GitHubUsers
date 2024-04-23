@@ -8,7 +8,7 @@ import com.alfadroid.githubusers.databinding.RecyclerViewUserItemBinding
 import com.alfadroid.githubusers.retrofit.UserInListDto
 
 class UsersAdapter(
-    private val dataSet: List<UserInListDto>
+    private var dataSet: List<UserInListDto>
 ) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
 
     class ViewHolder(
@@ -34,4 +34,9 @@ class UsersAdapter(
     }
 
     override fun getItemCount() = dataSet.size
+
+    fun submitList(list: List<UserInListDto>) {
+        dataSet = list
+        notifyDataSetChanged()
+    }
 }
