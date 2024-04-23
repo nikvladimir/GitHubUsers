@@ -27,16 +27,17 @@ class GitHubUsersFragment : Fragment() {
     ): View {
         binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
-        val usersList = arrayOf("January", "February", "March")
-//            getListGinHubUsers()
-        setupRecyclerView(usersList)
-
-//        getSpecificUserByAlias()
+        val usersList = getListGinHubUsers()
+        if (usersList != null) {
+            setupRecyclerView(usersList)
+        }
 
         return binging.root
     }
 
-    private fun getListGinHubUsers() {
+    private fun getListGinHubUsers(): List<UserInListDto>? {
+        var usersListGson: List<UserInListDto>? = null
+
         RetrofitInstance
             .retrofitService
             .requestUsers()
@@ -46,15 +47,15 @@ class GitHubUsersFragment : Fragment() {
                     call: retrofit2.Call<List<UserInListDto>>,
                     response: retrofit2.Response<List<UserInListDto>>
                 ) {
-                    val usersListResponse = response.body()
-                    val usersListGson = Gson().toJson(usersListResponse)
-                    println("USERS DATA Gson: $usersListGson")
+                    usersListGson = response.body()
                 }
 
                 override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
                     t.printStackTrace()
                 }
             })
+
+        return usersListGson
     }
 
     private fun getSpecificUserByAlias(alias: String = "defunkt") {
@@ -75,7 +76,7 @@ class GitHubUsersFragment : Fragment() {
             })
     }
 
-    private fun setupRecyclerView(usersList: Array<String>) {
+    private fun setupRecyclerView(usersList: List<UserInListDto>) {
         binging.recyclerViewUsersFragment.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = UsersAdapter(usersList)

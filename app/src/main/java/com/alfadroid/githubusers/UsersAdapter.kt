@@ -5,9 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.alfadroid.githubusers.databinding.RecyclerViewUserItemBinding
+import com.alfadroid.githubusers.retrofit.UserInListDto
 
 class UsersAdapter(
-    private val dataSet: Array<String>
+    private val dataSet: List<UserInListDto>
 ) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
 
     class ViewHolder(
@@ -16,9 +17,9 @@ class UsersAdapter(
 
         private val binding = RecyclerViewUserItemBinding.bind(itemView)
 
-        fun bind(userLogin: String, position: Int) = with(binding) {
-            tvUserId.text = userLogin
-            tvUserLogin.text = userLogin
+        fun bind(gitHubUserData: UserInListDto, position: Int) = with(binding) {
+            tvUserLogin.text = gitHubUserData.login
+            tvUserId.text = gitHubUserData.id.toString()
         }
     }
 
