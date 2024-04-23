@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
 import com.alfadroid.githubusers.retrofit.RetrofitInstance
 import com.alfadroid.githubusers.retrofit.UserByAliasDto
@@ -28,6 +29,7 @@ class GitHubUsersFragment : Fragment() {
 
         getListGinHubUsers()
         getSpecificUserByAlias()
+        setupRecyclerView()
 
         return binging.root
     }
@@ -48,7 +50,6 @@ class GitHubUsersFragment : Fragment() {
                 }
 
                 override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
-                    println(">>>>>>>>    Запрос requestUsers не выполнился")
                     t.printStackTrace()
                 }
             })
@@ -65,13 +66,21 @@ class GitHubUsersFragment : Fragment() {
                 ) {
                     val userDataResponse = response.body()
                     val userDataGson = Gson().toJson(userDataResponse)
-                    println("CURRENT USER Gson: $userDataGson")
                 }
 
                 override fun onFailure(call: retrofit2.Call<UserByAliasDto>, t: Throwable) {
-                    println(">>>>>>>>    Запрос requestUserByAlias не выполнился")
                 }
             })
-
     }
+
+    private fun setupRecyclerView() {
+        val dataset = arrayOf("January", "February", "March")
+        val usersAdapter = UsersAdapter(dataset)
+
+        binging.recyclerViewUsersFragment.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = usersAdapter
+        }
+    }
+
 }
