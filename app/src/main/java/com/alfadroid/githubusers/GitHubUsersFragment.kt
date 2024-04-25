@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
 import com.alfadroid.githubusers.retrofit.RetrofitInstance
 import com.alfadroid.githubusers.retrofit.UserByAliasDto
@@ -15,8 +16,9 @@ import com.google.gson.Gson
 
 class GitHubUsersFragment : Fragment() {
 
-    private lateinit var binging: FragmentGitHubUsersBinding
+    private lateinit var binding: FragmentGitHubUsersBinding
     private lateinit var usersAdapter: UsersAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,18 +28,16 @@ class GitHubUsersFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binging = FragmentGitHubUsersBinding.inflate(layoutInflater)
+        binding = FragmentGitHubUsersBinding.inflate(layoutInflater)
 
-        println("onCreateView")
         setupRecyclerView()
         getListGitHubUsers()
+        setupSwipeRefreshLayout()
 
-        return binging.root
+        return binding.root
     }
 
     private fun getListGitHubUsers() {
-        println("getListGinHubUsers")
-
         RetrofitInstance
             .retrofitService
             .requestUsers()
@@ -49,13 +49,20 @@ class GitHubUsersFragment : Fragment() {
                 ) {
                     val usersListGson = response.body()
                     usersListGson?.let { usersAdapter.submitList(it) }
-                    println("onResponse: $usersListGson")
                 }
 
                 override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
                     t.printStackTrace()
                 }
             })
+    }
+
+    private fun setupSwipeRefreshLayout() {
+        swipeRefreshLayout = binding.swipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener {
+            getListGitHubUsers()
+            swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun getSpecificUserByAlias(alias: String = "defunkt") {
@@ -77,9 +84,8 @@ class GitHubUsersFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        println("setupRecyclerView")
         usersAdapter = UsersAdapter()
-        binging.recyclerViewUsersFragment.apply {
+        binding.recyclerViewUsersFragment.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = usersAdapter
         }
