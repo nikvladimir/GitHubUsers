@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.alfadroid.githubusers.databinding.RecyclerViewUserItemBinding
 import com.alfadroid.githubusers.retrofit.UserInListDto
+import com.bumptech.glide.Glide
 
 class UsersAdapter(
 ) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
@@ -18,9 +19,14 @@ class UsersAdapter(
 
         private val binding = RecyclerViewUserItemBinding.bind(itemView)
 
-        fun bind(gitHubUserData: UserInListDto, position: Int) = with(binding) {
-            tvUserLogin.text = gitHubUserData.login
-            tvUserId.text = gitHubUserData.id.toString()
+        fun bind(gitHubUserData: UserInListDto, position: Int) {
+            binding.tvUserLogin.text = gitHubUserData.login
+            binding.tvUserId.text = gitHubUserData.id.toString()
+            Glide
+                .with(itemView.context)
+                .load(gitHubUserData.avatarUrl)
+                .circleCrop()
+                .into(binding.ivAvatar)
         }
     }
 

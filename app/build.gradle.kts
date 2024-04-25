@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.retrofit2.retrofit)
     implementation(libs.retrofit2.converter.gson)
+    implementation(libs.glide)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
