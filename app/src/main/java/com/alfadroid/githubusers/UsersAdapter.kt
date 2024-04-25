@@ -9,12 +9,14 @@ import com.alfadroid.githubusers.retrofit.UserInListDto
 import com.bumptech.glide.Glide
 
 class UsersAdapter(
+    private val onItemClick: (userLogin: String) -> Unit
 ) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
 
     private var dataSet: List<UserInListDto> = emptyList()
 
     class ViewHolder(
         itemView: View,
+        private val itemClick: (userLogin: String) -> Unit,
     ) : RecyclerView.ViewHolder(itemView) {
 
         private val binding = RecyclerViewUserItemBinding.bind(itemView)
@@ -27,13 +29,17 @@ class UsersAdapter(
                 .load(gitHubUserData.avatarUrl)
                 .circleCrop()
                 .into(binding.ivAvatar)
+
+            itemView.setOnClickListener {
+                itemClick(gitHubUserData.login)
+            }
         }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.recycler_view_user_item, viewGroup, false)
-        return ViewHolder(view)
+        return ViewHolder(view, onItemClick)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {

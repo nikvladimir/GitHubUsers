@@ -12,10 +12,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val gitHubUsersFragment = GitHubUsersFragment()
-
         supportFragmentManager.beginTransaction().apply {
-            replace(binding.fragmentContainer.id, gitHubUsersFragment)
+            replace(binding.fragmentContainer.id, GitHubUsersFragment())
             commit()
         }
 

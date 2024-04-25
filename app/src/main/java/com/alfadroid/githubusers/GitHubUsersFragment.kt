@@ -9,9 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
 import com.alfadroid.githubusers.retrofit.RetrofitInstance
-import com.alfadroid.githubusers.retrofit.UserByAliasDto
 import com.alfadroid.githubusers.retrofit.UserInListDto
-import com.google.gson.Gson
 
 
 class GitHubUsersFragment : Fragment() {
@@ -65,29 +63,23 @@ class GitHubUsersFragment : Fragment() {
         }
     }
 
-    private fun getSpecificUserByAlias(alias: String = "defunkt") {
-        RetrofitInstance
-            .retrofitService.requestUserByAlias(alias)
-            .enqueue(object : retrofit2.Callback<UserByAliasDto> {
-
-                override fun onResponse(
-                    call: retrofit2.Call<UserByAliasDto>,
-                    response: retrofit2.Response<UserByAliasDto>
-                ) {
-                    val userDataResponse = response.body()
-                    val userDataGson = Gson().toJson(userDataResponse)
-                }
-
-                override fun onFailure(call: retrofit2.Call<UserByAliasDto>, t: Throwable) {
-                }
-            })
-    }
-
     private fun setupRecyclerView() {
-        usersAdapter = UsersAdapter()
+        usersAdapter = UsersAdapter { userLogin ->
+            openFragment(userLogin)
+        }
         binding.recyclerViewUsersFragment.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = usersAdapter
+        }
+    }
+
+    private fun openFragment(userLogin: String) {
+        val gitHubUserFragment = GitHubUserFragment.newInstance(userLogin = userLogin)
+
+        parentFragmentManager.beginTransaction().apply {
+            replace(R.id.fragmentContainer, gitHubUserFragment)
+            addToBackStack("GitHubUserFragment")
+            commit()
         }
     }
 
