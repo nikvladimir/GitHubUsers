@@ -8,8 +8,9 @@ import com.alfadroid.githubusers.databinding.RecyclerViewUserItemBinding
 import com.alfadroid.githubusers.retrofit.UserInListDto
 
 class UsersAdapter(
-    private var dataSet: List<UserInListDto>
 ) : RecyclerView.Adapter<UsersAdapter.ViewHolder>() {
+
+    private var dataSet: List<UserInListDto> = emptyList()
 
     class ViewHolder(
         itemView: View,
