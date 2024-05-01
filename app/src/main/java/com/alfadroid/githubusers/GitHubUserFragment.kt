@@ -45,8 +45,8 @@ class GitHubUserFragment() : Fragment() {
                     with(binding) {
                         tvUserName.text = userByAliasDto?.login
                         tvUserEmail.text = userByAliasDto?.email ?: "-"
-                        tvFollowingCount.text = userByAliasDto?.following.toString() ?: "-"
-                        tvFollowersCount.text = userByAliasDto?.followers.toString() ?: "-"
+                        tvFollowingCount.text = userByAliasDto?.following?.toString() ?: "-"
+                        tvFollowersCount.text = userByAliasDto?.followers?.toString() ?: "-"
                     }
                     Glide.with(requireActivity())
                         .load(userByAliasDto?.avatarUrl)
