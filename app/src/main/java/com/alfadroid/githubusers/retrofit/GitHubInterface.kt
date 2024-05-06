@@ -1,15 +1,15 @@
 package com.alfadroid.githubusers.retrofit
 
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface GitHubInterface {
     @GET("/users")
-    fun requestUsers(): Call<List<UserInListDto>>
+    suspend fun requestUsers(): Response<List<UserInListDto>>
 
     @GET("/users/{alias}")
-    fun requestUserByAlias(
+    suspend fun requestUserByAlias(
         @Path("alias") alias: String?
-    ): Call<UserByAliasDto>
+    ): Response<UserByAliasDto>
 }

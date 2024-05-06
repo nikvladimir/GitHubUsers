@@ -8,15 +8,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    val retrofit: Retrofit = Retrofit
+    private val retrofit: Retrofit = Retrofit
         .Builder()
         .baseUrl(URL_GITHUB)
         .client(httpClient())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val retrofitService = retrofit.create(GitHubInterface::class.java)
-
+    val retrofitService: GitHubInterface = retrofit.create(GitHubInterface::class.java)
 
     private fun httpClient(): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()

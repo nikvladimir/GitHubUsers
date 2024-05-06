@@ -16,7 +16,7 @@ retrofit = "2.9.0"
 glide = "4.15.1"
 
 # plugins
-agp = "8.3.2"
+agp = "8.4.0"
 kotlin = "1.9.0"
 
 [libraries]

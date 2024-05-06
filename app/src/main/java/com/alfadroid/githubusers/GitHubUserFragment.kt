@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import com.alfadroid.githubusers.databinding.FragmentGitHubUserBinding
 import com.alfadroid.githubusers.retrofit.RetrofitInstance
 import com.alfadroid.githubusers.retrofit.UserByAliasDto
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
 
 class GitHubUserFragment() : Fragment() {
     private lateinit var userLogin: String
@@ -32,31 +34,25 @@ class GitHubUserFragment() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    private fun getSpecificUserByAlias(alias: String = "defunkt") {
-        RetrofitInstance
-            .retrofitService.requestUserByAlias(alias)
-            .enqueue(object : retrofit2.Callback<UserByAliasDto> {
+    private fun getSpecificUserByAlias(alias: String) {
 
-                override fun onResponse(
-                    call: retrofit2.Call<UserByAliasDto>,
-                    response: retrofit2.Response<UserByAliasDto>
-                ) {
-                    val userByAliasDto = response.body()
-                    with(binding) {
-                        tvUserName.text = userByAliasDto?.login
-                        tvUserEmail.text = userByAliasDto?.email ?: "-"
-                        tvFollowingCount.text = userByAliasDto?.following?.toString() ?: "-"
-                        tvFollowersCount.text = userByAliasDto?.followers?.toString() ?: "-"
+        lifecycleScope.launch {
+            val response = RetrofitInstance.retrofitService.requestUserByAlias(alias)
+
+                    if (response.isSuccessful) {
+                        val userByAliasDto = response.body()
+                        with(binding) {
+                            tvUserName.text = userByAliasDto?.login
+                            tvUserEmail.text = userByAliasDto?.email ?: "-"
+                            tvFollowingCount.text = userByAliasDto?.following?.toString() ?: "-"
+                            tvFollowersCount.text = userByAliasDto?.followers?.toString() ?: "-"
+                        }
+                        Glide.with(requireActivity())
+                            .load(userByAliasDto?.avatarUrl)
+                            .into(binding.ivUserAvatar)
                     }
-                    Glide.with(requireActivity())
-                        .load(userByAliasDto?.avatarUrl)
-                        .into(binding.ivUserAvatar)
                 }
-
-                override fun onFailure(call: retrofit2.Call<UserByAliasDto>, t: Throwable) {
-                }
-            })
-    }
+        }
 
     companion object {
         fun newInstance(

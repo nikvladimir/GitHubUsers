@@ -5,11 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alfadroid.githubusers.databinding.FragmentGitHubUsersBinding
 import com.alfadroid.githubusers.retrofit.RetrofitInstance
 import com.alfadroid.githubusers.retrofit.UserInListDto
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class GitHubUsersFragment : Fragment() {
@@ -36,23 +41,14 @@ class GitHubUsersFragment : Fragment() {
     }
 
     private fun getListGitHubUsers() {
-        RetrofitInstance
-            .retrofitService
-            .requestUsers()
-            .enqueue(object : retrofit2.Callback<List<UserInListDto>> {
 
-                override fun onResponse(
-                    call: retrofit2.Call<List<UserInListDto>>,
-                    response: retrofit2.Response<List<UserInListDto>>
-                ) {
-                    val usersListGson = response.body()
-                    usersListGson?.let { usersAdapter.submitList(it) }
-                }
-
-                override fun onFailure(call: retrofit2.Call<List<UserInListDto>>, t: Throwable) {
-                    t.printStackTrace()
-                }
-            })
+        lifecycleScope.launch {
+            val response = RetrofitInstance.retrofitService.requestUsers()
+            if (response.isSuccessful) {
+                val usersListGson = response.body()
+                usersListGson?.let { usersAdapter.submitList(it) }
+            }
+        }
     }
 
     private fun setupSwipeRefreshLayout() {
